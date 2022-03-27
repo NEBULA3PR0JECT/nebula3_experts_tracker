@@ -4,9 +4,10 @@ Nebula Tracker expert repository
 2. tracker - code for tracker expert 
 3. nebula3_database - submodule with database integration and API
 # How to create submodule:
-1. Get the submodule initially  
+1. Get the main module initially  
 git clone https://github.com/dsivov/nebula3_experts_tracker.git  
 cd nebula3_experts_tracker  
+Then get submodule  
 git submodule add https://github.com/dsivov/nebula3_database.git    
 git submodule init  
 2. Change to the submodule directory  
