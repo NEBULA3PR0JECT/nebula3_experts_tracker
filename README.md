@@ -13,7 +13,7 @@ git submodule init
 2. Change to the submodule directory  
 cd nebula3_database 
 3. Checkout desired branch  
-git checkout master 
+git checkout main 
 4. Update  
 git pull 
 5. Get back to your project root   
