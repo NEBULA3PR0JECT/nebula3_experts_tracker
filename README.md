@@ -5,6 +5,8 @@
 
 The output should be: `input.jpg: detected 15 instances.` 
 
+Note: If you need to install docker or nvidia-docker, please refer to this link: https://cnvrg.io/how-to-setup-docker-and-nvidia-docker-2-0-on-ubuntu-18-04/
+
 # nebula3_experts_tracker
 Nebula Tracker expert repository
 1. Docker - directory with docker files (Dockerfile)
