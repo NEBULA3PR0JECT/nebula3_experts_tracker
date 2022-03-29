@@ -1,3 +1,8 @@
+# nebula3_experts_tracker
+Nebula Tracker expert repository
+1. Docker - directory with docker files (Dockerfile)
+2. tracker - code for tracker expert 
+3. nebula3_database - submodule with database integration and API
 # How to run from DOCKER
 1. `git clone https://github.com/dsivov/nebula3_experts_tracker.git` 
 2. `nvidia-docker run -it --name detectron2 detectron2:v0`
@@ -12,12 +17,6 @@ The output should be: `input.jpg: detected 15 instances.`
 4. Check that everything works by running `tracker/tracker/my_test.py`
 
 Note: If you need to install docker or nvidia-docker, please refer to this link: https://cnvrg.io/how-to-setup-docker-and-nvidia-docker-2-0-on-ubuntu-18-04/
-
-# nebula3_experts_tracker
-Nebula Tracker expert repository
-1. Docker - directory with docker files (Dockerfile)
-2. tracker - code for tracker expert 
-3. nebula3_database - submodule with database integration and API
 
 # How to create submodule: (Already done in this repo, please skip this)
 1. Get the main module initially:  
