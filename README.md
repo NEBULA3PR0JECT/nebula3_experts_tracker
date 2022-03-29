@@ -4,12 +4,12 @@
 3. `python3 demo/demo.py --config-file configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml --input input.jpg --output outputs/ --opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl`
 
 The output should be: `input.jpg: detected 15 instances.` 
-
 # How to run from VSCODE (tracker folder)
 1. `git clone https://github.com/dsivov/nebula3_experts_tracker.git`
-2. Install detectron environment, found in: `tracker/tracker/detectron-environment.yml` (This can be done with the following: `conda env create --name envname --file=environments.yml`)
-3. `conda activate ENVNAME`
-4. Check that everything works by running `tracker/tracker/my_test.py`
+2. `chmox a+x /tracker/setup_envs.sh`
+3. `./setup_envs.sh`
+4. `conda activate detectron`
+5. Check that everything works by running `python3 tracker/my_test.py`
 
 Note: If you need to install docker or nvidia-docker, please refer to this link: https://cnvrg.io/how-to-setup-docker-and-nvidia-docker-2-0-on-ubuntu-18-04/
 
