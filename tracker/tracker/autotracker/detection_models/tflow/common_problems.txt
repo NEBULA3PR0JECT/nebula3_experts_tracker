@@ -1,0 +1,18 @@
+# Problem #1: 
+Loaded runtime CuDNN library: 7.5.1 but source was compiled with: 7.6.4
+Solution:
+
+Download your the Cudnn that is suitable for your machine.
+In my case it's cuda 10.0, so I download Cuddn 7.6.4 from:
+  - Go to https://developer.nvidia.com/cudnn  
+  - Create an account  
+  - Download the suitable version of Cudnn from https://developer.nvidia.com/rdp/cudnn-download  
+  - Extract the downloaded file `tar -xzvf <filename>`  
+  - Copy the following files into the CUDA directory  
+In my case it was `cudnn-10.0-linux-x64-v7.6.4.38.tgz`
+
+Then, run the following commands and you are done.
+
+sudo cp -P cuda/include/cudnn.h /usr/local/cuda-10.0/include
+sudo cp -P cuda/lib64/libcudnn* /usr/local/cuda-10.0/lib64/
+sudo chmod a+r /usr/local/cuda-10.0/lib64/libcudnn*
