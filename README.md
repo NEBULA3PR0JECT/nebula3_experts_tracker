@@ -27,7 +27,7 @@ Note 2: If you need to install docker or nvidia-docker, please refer to this lin
 `cd nebula3_experts_tracker `
 
 2. Then get submodule:  
-`git submodule add https://github.com/dsivov/nebula3_database.git`    
+`git submodule add https://github.com/NEBULA3PR0JECT/nebula3_database.git`    
 `git submodule init `
 
 3. Change to the submodule directory:  
