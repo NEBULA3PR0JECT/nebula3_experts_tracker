@@ -22,25 +22,22 @@ Note 1: `my_test.py` works on a movie. and `demo/demo.py` works on an image.
 Note 2: If you need to install docker or nvidia-docker, please refer to this link: https://cnvrg.io/how-to-setup-docker-and-nvidia-docker-2-0-on-ubuntu-18-04/
 
 # How to create submodule: (Already done in this repo, please skip this)
-1. Get the main module initially:  
-`git clone https://github.com/NEBULA3PR0JECT/nebula3_database.git `
-`cd nebula3_experts_tracker `
 
-2. Then get submodule:  
+1. Then get submodule:  
 `git submodule add https://github.com/NEBULA3PR0JECT/nebula3_database.git`    
 `git submodule init `
 
-3. Change to the submodule directory:  
+2. Change to the submodule directory:  
 `cd nebula3_database` 
 
-4. Checkout desired branch:  
+3. Checkout desired branch:  
 `git checkout main` 
 
-5. Update:  
+4. Update:  
 git pull 
 
-6. Get back to your project root:   
+5. Get back to your project root:   
 `cd ..`  
 
-7. Now the submodules are in the state you want, so"  
+6. Now the submodules are in the state you want, so"  
 `git commit -am "Pulled down update to submodule_dir"` 
