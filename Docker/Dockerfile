@@ -32,16 +32,13 @@ RUN source activate ${CONDA_ENV}
 RUN conda update -n base -c defaults conda
 
 # RUN apt-get install ffmpeg libsm6 libxext6 -y
-RUN pip3 install scipy==1.6.0
-RUN pip3 install opencv-python
-RUN pip3 install tqdm
-RUN pip3 install numpy
+RUN source activate ${CONDA_ENV} && pip3 install scipy==1.6.0 \
+  && pip3 install opencv-python && pip3 install tqdm && pip3 install numpy \
+  && pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html \
+  && pip install cython \
+	'git+https://github.com/facebookresearch/fvcore' \
+  && pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 
-# install dependencies
-# See https://pytorch.org/ for other options if you use a different version of CUDA
-RUN pip install torch torchvision cython \
-	'git+https://github.com/facebookresearch/fvcore'
-RUN pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 
 # install detectron2
 RUN git clone https://github.com/facebookresearch/detectron2 /detectron2_repo
@@ -49,14 +46,23 @@ ENV FORCE_CUDA="1"
 ENV TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta;Turing"
 # RUN pip install -e /detectron2_repo
 RUN cd detectron2_repo
-RUN pip install -e /detectron2_repo
+RUN source activate ${CONDA_ENV} && pip install -e /detectron2_repo
 
 RUN mkdir detectron2_repo/outputs
 
 # RUN conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=10.2 -c pytorch
-RUN pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
-WORKDIR /detectron2_repo
 
 RUN wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
+
+ARG CONDA_ENV=tflow
+RUN conda --version \ 
+    && conda create --name ${CONDA_ENV} python=3.7
+RUN source activate ${CONDA_ENV}
+
+RUN git clone https://github.com/NEBULA3PR0JECT/nebula3_experts_tracker.git
+
+RUN apt-get update && apt-get install zip -y
+RUN cd nebula3_experts_tracker/tracker/autotracker/detection_models/tflow && chmod a+x setup.sh && ./setup.sh
+
 # run it:
 # python3 demo/demo.py --config-file configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml --input input.jpg --output outputs/ --opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl

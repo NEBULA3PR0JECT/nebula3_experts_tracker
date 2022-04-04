@@ -1,6 +1,9 @@
 # follow instructions from https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2.md
 # tutorial: https://github.com/tensorflow/models/blob/master/research/object_detection/colab_tutorials/object_detection_tutorial.ipynb
 
+echo "==== Activating conda environment ====="
+conda activate tflow
+
 # install tensorflow
 echo "===== installing tensorflow ====="
 pip install tensorflow
