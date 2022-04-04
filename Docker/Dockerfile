@@ -56,8 +56,8 @@ RUN wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
 
 ARG CONDA_ENV=tflow
 RUN conda --version \ 
-    && conda create --name ${CONDA_ENV} python=3.7
-RUN source activate ${CONDA_ENV}
+    && conda create --name ${CONDA_ENV} python=3.8
+RUN source activate ${CONDA_ENV} && pip install "opencv-python>=4.1.2" "opencv-contrib-python>=4.1.2" shapely python-arango boto3
 
 RUN git clone https://github.com/NEBULA3PR0JECT/nebula3_experts_tracker.git
 

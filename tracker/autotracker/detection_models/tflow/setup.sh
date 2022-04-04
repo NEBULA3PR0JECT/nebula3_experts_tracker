@@ -2,6 +2,7 @@
 # tutorial: https://github.com/tensorflow/models/blob/master/research/object_detection/colab_tutorials/object_detection_tutorial.ipynb
 
 echo "==== Activating conda environment ====="
+conda init 
 conda activate tflow
 
 # install tensorflow
