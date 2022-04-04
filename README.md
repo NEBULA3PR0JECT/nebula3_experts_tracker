@@ -23,7 +23,7 @@ Note 2: If you need to install docker or nvidia-docker, please refer to this lin
 
 # How to create submodule: (Already done in this repo, please skip this)
 1. Get the main module initially:  
-`git clone https://github.com/dsivov/nebula3_experts_tracker.git `
+`git clone https://github.com/dsivov/nebula3_database.git `
 `cd nebula3_experts_tracker `
 
 2. Then get submodule:  
