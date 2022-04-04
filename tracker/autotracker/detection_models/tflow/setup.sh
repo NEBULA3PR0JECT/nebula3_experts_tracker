@@ -1,9 +1,10 @@
 # follow instructions from https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2.md
 # tutorial: https://github.com/tensorflow/models/blob/master/research/object_detection/colab_tutorials/object_detection_tutorial.ipynb
 
+load_base_env
 echo "==== Activating conda environment ====="
-conda init 
-conda activate tflow
+conda create -n $TFLOW_ENV_NAME python=3.8 -y
+conda activate $TFLOW_ENV_NAM
 
 # install tensorflow
 echo "===== installing tensorflow ====="
@@ -42,3 +43,15 @@ pip3 install tensorflow==2.1.0
 echo "===== testing setup ====="
 python object_detection/builders/model_builder_tf2_test.py
 popd
+
+
+function load_base_env {
+    # load base directly
+    source "$(dirname $(dirname $(which conda)))/bin/activate"
+
+    # check for errors
+    if [[ "$?" != "0" ]] || [[ $CONDA_DEFAULT_ENV != "base" ]]; then
+        echo "ERROR: loading conda. please run with conda \"base\" env"
+        exit 1
+    fi
+}
