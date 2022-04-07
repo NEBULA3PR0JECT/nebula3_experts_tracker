@@ -4,8 +4,8 @@
 load_base_env
 echo "==== Activating conda environment ====="
 conda init bash
-conda create -n $TFLOW_ENV_NAME python=3.8 -y
-conda activate $TFLOW_ENV_NAM
+conda create -n tflow python=3.8 -y
+source activate tflow
 
 # install tensorflow
 echo "===== installing tensorflow ====="

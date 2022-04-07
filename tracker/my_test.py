@@ -60,5 +60,5 @@ preds = predictor.predict_video(
 #   'detection_classes': a list of string classes, e.g. "person", "car", "mango", ...
 # }
 # Print first prediction
-print(preds[0])
+print(preds)
 
