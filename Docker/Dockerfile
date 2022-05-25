@@ -59,15 +59,19 @@ RUN conda --version \
     && conda create --name ${CONDA_ENV} python=3.8
 RUN source activate ${CONDA_ENV} && pip install "opencv-python>=4.1.2" "opencv-contrib-python>=4.1.2" shapely python-arango boto3
 
-RUN ls 
+RUN echo "test"
 RUN git clone https://github.com/NEBULA3PR0JECT/nebula3_experts_tracker.git
+
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 
 RUN apt-get update && apt-get install zip -y
 RUN cd nebula3_experts_tracker/tracker/autotracker/detection_models/tflow && chmod a+x setup.sh && ./setup.sh
 
-RUN echo "Running a test to check that tracker works on a video."
-RUN echo "Activating conda environment called detectron."
-RUN source activate detectron && cd nebula3_experts_tracker/tracker/run_tracker.py
+# RUN echo "Running a test to check that tracker works on a video."
+# RUN echo "Activating conda environment called detectron."
+# RUN ls nebula3_experts_tracker/tracker
+# RUN source activate detectron2 && python3 nebula3_experts_tracker/tracker/run_tracker.py
 
 # run it:
 # python3 demo/demo.py --config-file configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml --input input.jpg --output outputs/ --opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
