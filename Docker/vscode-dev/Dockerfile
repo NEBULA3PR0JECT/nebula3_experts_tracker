@@ -46,9 +46,15 @@ RUN /opt/conda/bin/conda config --append channels conda-forge && /opt/conda/bin/
     && conda clean --all --yes && rm -rf /tmp/conda-tmp
 
 RUN conda install jupyterlab && conda clean --all --yes
-
 WORKDIR /notebooks
 EXPOSE 8000
+
+#install tracker - microservice docker part
+RUN apt-get update && apt-get install zip -y
+COPY . .
+RUN chmod a+x tracker/setup_docker_env.sh && cd tracker && ./setup_docker_env.sh
+# conda activate detectron
+RUN cd tracker/autotracker/detection_models/tflow && chmod +x setup.sh && ./setup.sh
 
 #COPY requirements.txt .
 #RUN pip install -r requirements.txt
