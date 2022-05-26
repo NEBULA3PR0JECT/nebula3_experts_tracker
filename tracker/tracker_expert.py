@@ -1,11 +1,10 @@
 from os import getenv
 from fastapi import FastAPI
-from typing import Optional
 
 from nebula3_experts.experts.service.base_expert import BaseExpert
 from nebula3_experts.experts.app import ExpertApp
 from nebula3_experts.experts.common.models import ExpertParam
-from tracker.common.defines import StepParam
+from tracker.common.models import StepParam
 from tracker.common.config import TRACKER_CONF
 from nebula3_experts.experts.common.defines import OutputStyle
 import tracker.autotracker as at
