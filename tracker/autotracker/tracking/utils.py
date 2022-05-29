@@ -7,8 +7,10 @@ from shapely.geometry import box
 from tqdm import tqdm
 
 # import from common
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-from common.datasets import VideoFile, FrameImagesFolder
+# uncomment when running from run_tracker.py
+#sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+from ...common.datasets import VideoFile, FrameImagesFolder
+
 
 TRACKER_TYPE_CSRT = 'CSRT'
 TRACKER_TYPE_KCF  = 'KCF'
@@ -73,7 +75,7 @@ class MultiTracker:
                 self.latest_tracker_data.pop(i)
                 self.trackers.pop(i)
                 removed_trackers.append(i)
-        
+
         return removed_trackers, {i: self.latest_tracker_data[i]['box'] for i in self.latest_tracker_data}
 
     def merge_new_detections(self, frame, detection_boxes, detection_scores, detection_classes,
@@ -142,7 +144,7 @@ class MultiTracker:
             if score > max_score:
                 max_score = score
                 match_id = i
-        
+
         if max_score > iou_thresh:
             return match_id
         else:
@@ -159,7 +161,7 @@ class MultiTracker:
         # convert boxes to xyxy format
         (x, y, w, h) = box1
         box1 = (x, y, x+w, y+h)
-        
+
         (x, y, w, h) = box2
         box2 = (x, y, x+w, y+h)
 
@@ -197,7 +199,7 @@ class MultiTracker:
 
         # iterate video frames
         for frame_count, frame in tqdm(enumerate(ds), total=len(ds), disable=not show_pbar):
-            
+
             # update all existing trackers to current frame
             multitracker.update(frame)
 

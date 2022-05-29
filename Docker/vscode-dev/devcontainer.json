@@ -24,7 +24,8 @@
 		"ms-toolsai.jupyter",
 		"ms-toolsai.jupyter-keymap",
 		"donjayamanne.githistory",
-		"njpwerner.autodocstring"
+		"njpwerner.autodocstring",
+		"rangav.vscode-thunder-client"
 	],
 	"appPort": "48000:8000",
 	// mount other folders

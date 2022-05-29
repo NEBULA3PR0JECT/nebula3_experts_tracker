@@ -6,8 +6,9 @@ import numpy as np
 from tqdm import tqdm
 
 # import from common
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-from common.datasets import VideoFile, FrameImagesFolder
+# uncomment when running from run_tracker.py
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+from ...common.datasets import VideoFile, FrameImagesFolder
 
 class PretrainedVideoPredictor(ABC):
     """
@@ -93,11 +94,11 @@ class PretrainedVideoPredictor(ABC):
 
             # perform prediction on batch
             if batch:
-                batch_preds = self.predict_batch(np.stack(batch)) 
+                batch_preds = self.predict_batch(np.stack(batch))
                 preds.extend(batch_preds)
-                
+
                 pbar.update(len(batch))
-        
+
         # cleanup for pbar and dataset
         pbar.close()
         del ds
