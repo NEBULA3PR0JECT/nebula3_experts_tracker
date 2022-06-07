@@ -1,0 +1,8 @@
+image: aharonamir/nebula3_experts_tracker
+port: 48000:8000
+env:
+  - name: ARANGO_DB
+    value: nebula_amir
+resources:
+  replicas: 1
+  instanceType: C4

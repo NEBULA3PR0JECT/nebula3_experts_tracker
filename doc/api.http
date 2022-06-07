@@ -31,3 +31,16 @@ content-type: application/json
         "detect_every": 50
     }
 }
+
+### in docker
+POST http://localhost:48005/predict
+content-type: application/json
+
+{
+    "movie_id": "Movies/92363371",
+    "local": false,
+    "extra_params": {
+        "action": "track",
+        "detect_every": 50
+    }
+}

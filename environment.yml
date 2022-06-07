@@ -142,7 +142,7 @@ dependencies:
     - gitpython==3.1.26
     - google-auth==2.6.6
     - google-auth-oauthlib==0.4.6
-    - grpcio==1.46.3
+    - grpcio
     - grpcio-tools==1.37.1
     - hydra-core==1.1.2
     - importlib-metadata==4.11.4
