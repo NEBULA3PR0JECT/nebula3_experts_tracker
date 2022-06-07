@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   tracker:
-    image: aharonamir/nebula3_experts_tracker
+    image: aharonamir/nebula3_experts_tracker:108882f
     ports:
       - "48005:8000"
     environment:
