@@ -4,7 +4,7 @@ import json
 from fastapi import FastAPI
 from nebula3_experts.experts.service.base_expert import BaseExpert
 from nebula3_experts.experts.app import ExpertApp
-from nebula3_experts.experts.common.models import ExpertParam
+from nebula3_experts.experts.common.models import ExpertParam, TokenRecord
 from tracker.common.models import StepParam
 from tracker.common.config import TRACKER_CONF
 from nebula3_experts.experts.common.defines import OutputStyle
@@ -18,6 +18,11 @@ sys.path.remove("/notebooks")
 
 import tracker.autotracker as at
 
+ACTION_DETECT = 'detect'
+ACTION_TRACK = 'track'
+ACTION_DEPTH = 'depth'
+ACTION_ALL = 'all' # track+depth
+
 """ Predict params
 @param: predict_every: how many frames to track before accepting detection model detections.
 @param: merge_iou_threshold: the IOU score threhold for merging items during tracking.
@@ -26,7 +31,6 @@ import tracker.autotracker as at
 @param: batch_size
 @param: step - array of steps: [detect,track,depth]
 """
-
 
 class TrackerExpert(BaseExpert):
     def __init__(self):
@@ -96,9 +100,42 @@ class TrackerExpert(BaseExpert):
 
     def predict(self, expert_params: ExpertParam):
         """ handle new movie """
-        movie = self.movie_db.get_movie(expert_params.movie_id)
-        print(f'Predicting movie: {expert_params.movie_id}')
-        return { 'result': { 'movie_id' : expert_params.movie_id, 'info': movie , 'extra_params': expert_params.extra_params} }
+        step_param, error = self.parse_tracker_params(expert_params)
+        if error:
+            movie_id = expert_params.movie_id if  expert_params.movie_id else ''
+            return { 'error': f'error {error} for movie: {movie_id}'}
+        print(f'Predicting movie: {expert_params.movie_id} with action: {step_param.action}')
+        if step_param.action == ACTION_TRACK:
+            result, error = self.handle_action_on_movie(step_param, False, self.track, self.transform_tracking_result)
+        if step_param.action == ACTION_DETECT:
+            result, error = self.handle_action_on_movie(step_param, False, self.detect, self.transform_detection_result)
+        if step_param.action == ACTION_DEPTH:
+            pass
+        return { 'result': result, 'error': error }
+
+    def parse_tracker_params(self, expert_params: ExpertParam):
+        error = None
+        if (expert_params.movie_id is None):
+            error = 'no movie id'
+            return None, error
+        if (expert_params.extra_params is None):
+            error = 'no extra_params id'
+            return None, error
+        step_param = StepParam(movie_id=expert_params.movie_id, output=expert_params.output)
+        if expert_params.extra_params['action']:
+            step_param.action = expert_params.extra_params['action']
+        if expert_params.extra_params['detect_every']:
+            step_param.detect_every = expert_params.extra_params['detect_every']
+        if 'merge_iou_threshold' in expert_params.extra_params:
+            step_param.merge_iou_threshold = expert_params.extra_params['merge_iou_threshold']
+        if 'refresh_on_detect' in expert_params.extra_params:
+            step_param.refresh_on_detect = expert_params.extra_params['refresh_on_detect']
+        if 'tracker_type' in expert_params.extra_params:
+            step_param.tracker_type = expert_params.extra_params['tracker_type']
+        if 'batch_size' in expert_params.extra_params:
+            step_param.batch_size = expert_params.extra_params['batch_size']
+
+        return step_param, error
 
     def handle_action_on_movie(self,
                                params: StepParam,
@@ -127,7 +164,7 @@ class TrackerExpert(BaseExpert):
                 # now calling action function
                 action_result = action_func(params)
                 # now transforming results data
-                result = transform_func(action_result, params.output)
+                result = transform_func(action_result, params)
             else:
                 error_msg = f'no frames for movie: {params.movie_id}'
                 self.logger.warning(error_msg)
@@ -169,7 +206,7 @@ class TrackerExpert(BaseExpert):
                                  pred_every = detect_params.detect_every,
                                  show_pbar = False)
 
-    def transform_detection_result(self, detection_result, output):
+    def transform_detection_result(self, detection_result, detect_params: StepParam):
         """transform detection result to the token db format
 
         Args:
@@ -178,6 +215,7 @@ class TrackerExpert(BaseExpert):
         """
         # print(detection_result)
         detections = {}
+        result = list()
         for detection in detection_result:
             detection_boxes = detection['detection_boxes']
             detection_scores = detection['detection_scores']
@@ -191,7 +229,13 @@ class TrackerExpert(BaseExpert):
                     detections[cls].append(element)
                 else:
                     detections[cls] = [element]
-        return detections
+                tr = TokenRecord(detect_params.movie_id, 
+                                0, 0, self.get_name(),
+                                detections[cls],
+                                cls,
+                                {'class': 'Object'})
+                result.append(tr)
+        return result
 
     def track(self, track_params: StepParam):
         track_data = at.tracking_utils.MultiTracker.track_video_objects(
@@ -206,14 +250,23 @@ class TrackerExpert(BaseExpert):
             )
         return track_data
 
-    def transform_tracking_result(self, tracking_result, output):
+    def transform_tracking_result(self, tracking_result, track_params: StepParam):
         # print(tracking_result)
-        result = {}
+        result = list()
         for oid, data in tracking_result.items():
+            label = data['class'] + str(oid) 
             print(data['boxes'])
             print(data['scores'])
-            print(data['class'] + str(oid))
-            result[data['class'] + str(oid)] = {'boxes': data['boxes'], 'scores': data['scores'] }
+            print(label)
+            bbox = dict()
+            for index, box in data['boxes'].items():
+                bbox[index] = { 'score': data['scores'][index], 'bbox': box}
+            tr = TokenRecord(track_params.movie_id, 
+                             0, 0, self.get_name(),
+                             bbox,
+                             label,
+                             {'class': 'Object'})
+            result.append(tr)
         return result
 
 tracker_expert = TrackerExpert()

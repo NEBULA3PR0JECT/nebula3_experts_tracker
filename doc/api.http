@@ -1,0 +1,33 @@
+# Install Rest client extension to use this requests
+# https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
+### DETECT
+POST http://localhost:8000/detect
+content-type: application/json
+
+{
+    "movie_id": "Movies/92363371",
+    "detect_every": 50
+}
+
+### TRACK
+POST http://localhost:8000/track
+content-type: application/json
+
+{
+    "movie_id": "Movies/92363371",
+    "detect_every": 50
+}
+
+### PREDICT
+POST http://localhost:8000/predict
+content-type: application/json
+
+{
+    "movie_id": "Movies/92363371",
+    "local": false,
+    "extra_params": {
+        "action": "detect",
+        "detect_every": 50
+    }
+}
