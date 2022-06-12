@@ -33,7 +33,20 @@ content-type: application/json
 }
 
 ### in docker
-POST http://localhost:48005/predict
+POST http://localhost:8000/predict
+content-type: application/json
+
+{
+    "movie_id": "Movies/92363098",
+    "local": false,
+    "extra_params": {
+        "action": "track",
+        "detect_every": 50
+    }
+}
+
+### in gradient
+POST https://d36e439aba54842ec94938720621aefa1.clg07azjl.paperspacegradient.com/predict
 content-type: application/json
 
 {

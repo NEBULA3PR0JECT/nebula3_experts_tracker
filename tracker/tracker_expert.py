@@ -2,7 +2,7 @@ import os
 import sys
 import json
 from fastapi import FastAPI
-from nebula3_experts.experts.service.base_expert import BaseExpert
+from nebula3_experts.experts.service.base_expert import BaseExpert, DEFAULT_FILE_PATH
 from nebula3_experts.experts.app import ExpertApp
 from nebula3_experts.experts.common.models import ExpertParam, TokenRecord
 from tracker.common.models import StepParam
@@ -13,7 +13,7 @@ sys.path.insert(0,"/notebooks/tracker/common/../..")
 sys.path.insert(1,"/notebooks/tracker")
 sys.path.remove(".")
 # remove for microservice, enable for vscode container
-#sys.path.remove("/notebooks") 
+#sys.path.remove("/notebooks")
 
 # sys.path.append("/notebooks/tracker/autotracker")
 # sys.path.append("/notebooks/tracker/autotracker/tracking/../../..")
@@ -160,9 +160,11 @@ class TrackerExpert(BaseExpert):
             self.logger.error(f'missing movie_id')
             return { 'error': f'movie frames not found: {params.movie_id}'}
         try:
+            self.tracker_dispatch_dict[params.movie_id] = {}
             if not movie_fetched:
-                movie, num_frames = self.get_movie_and_frames(params.movie_id)
-            if movie and num_frames:
+                movie_fetched = self.download_video_file(params.movie_id)
+                # movie, num_frames = self.get_movie_and_frames(params.movie_id)
+            if movie_fetched:
                 # now calling action function
                 action_result = action_func(params)
                 # now transforming results data
@@ -203,7 +205,7 @@ class TrackerExpert(BaseExpert):
         Returns:
             aggs: _description_
         """
-        return self.model.predict_video(detect_params.movie_id,
+        return self.model.predict_video(DEFAULT_FILE_PATH, # detect_params.movie_id,
                                  batch_size = detect_params.batch_size,
                                  pred_every = detect_params.detect_every,
                                  show_pbar = False)
@@ -231,7 +233,7 @@ class TrackerExpert(BaseExpert):
                     detections[cls].append(element)
                 else:
                     detections[cls] = [element]
-                tr = TokenRecord(detect_params.movie_id, 
+                tr = TokenRecord(detect_params.movie_id,
                                 0, 0, self.get_name(),
                                 detections[cls],
                                 cls,
@@ -241,7 +243,7 @@ class TrackerExpert(BaseExpert):
 
     def track(self, track_params: StepParam):
         track_data = at.tracking_utils.MultiTracker.track_video_objects(
-                video_path=track_params.movie_id,
+                video_path=DEFAULT_FILE_PATH, #  track_params.movie_id,
                 detection_model=self.model,
                 detect_every=track_params.detect_every,
                 merge_iou_threshold=track_params.merge_iou_threshold,
@@ -256,14 +258,14 @@ class TrackerExpert(BaseExpert):
         # print(tracking_result)
         result = list()
         for oid, data in tracking_result.items():
-            label = data['class'] + str(oid) 
+            label = data['class'] + str(oid)
             print(data['boxes'])
             print(data['scores'])
             print(label)
             bbox = dict()
             for index, box in data['boxes'].items():
                 bbox[index] = { 'score': data['scores'][index], 'bbox': box}
-            tr = TokenRecord(track_params.movie_id, 
+            tr = TokenRecord(track_params.movie_id,
                              0, 0, self.get_name(),
                              bbox,
                              label,
