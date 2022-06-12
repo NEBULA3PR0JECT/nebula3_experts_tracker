@@ -163,7 +163,6 @@ class TrackerExpert(BaseExpert):
             self.tracker_dispatch_dict[params.movie_id] = {}
             if not movie_fetched:
                 movie_fetched = self.download_video_file(params.movie_id)
-                # movie, num_frames = self.get_movie_and_frames(params.movie_id)
             if movie_fetched:
                 # now calling action function
                 action_result = action_func(params)
