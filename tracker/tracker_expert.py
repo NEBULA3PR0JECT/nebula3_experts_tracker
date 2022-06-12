@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from fastapi import FastAPI
+from nebula3_experts.experts.common.constants import OUTPUT_DB
 from nebula3_experts.experts.service.base_expert import BaseExpert, DEFAULT_FILE_PATH
 from nebula3_experts.experts.app import ExpertApp
 from nebula3_experts.experts.common.models import ExpertParam, TokenRecord
@@ -113,6 +114,8 @@ class TrackerExpert(BaseExpert):
             result, error = self.handle_action_on_movie(step_param, False, self.detect, self.transform_detection_result)
         if step_param.action == ACTION_DEPTH:
             pass
+        if not error and expert_params.output == OUTPUT_DB:
+            result, error = self.save_to_db(expert_params.movie_id, result)
         return { 'result': result, 'error': error }
 
     def parse_tracker_params(self, expert_params: ExpertParam):
