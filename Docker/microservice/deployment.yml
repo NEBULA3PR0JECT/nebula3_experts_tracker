@@ -10,4 +10,4 @@ env:
 
 resources:
   replicas: 1
-  instanceType: C4
+  instanceType: RTX4000
