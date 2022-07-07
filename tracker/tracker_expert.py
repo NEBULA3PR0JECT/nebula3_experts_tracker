@@ -2,6 +2,11 @@ import os
 import sys
 import json
 from fastapi import FastAPI
+
+sys.path.append("/notebooks/nebula3_experts")
+sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline")
+sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline/nebula3_database")
+
 from nebula3_experts.experts.common.constants import OUTPUT_DB
 from nebula3_experts.experts.service.base_expert import BaseExpert, DEFAULT_FILE_PATH
 from nebula3_experts.experts.app import ExpertApp
@@ -10,14 +15,14 @@ from tracker.common.models import StepParam
 from tracker.common.config import TRACKER_CONF
 from nebula3_experts.experts.common.defines import OutputStyle
 
-sys.path.insert(0,"/notebooks/tracker/common/../..")
-sys.path.insert(1,"/notebooks/tracker")
-sys.path.remove(".")
+# sys.path.insert(0,"/notebooks/tracker/common/../..")
+# sys.path.insert(1,"/notebooks/tracker")
+# sys.path.remove(".")
 # remove for microservice, enable for vscode container
-#sys.path.remove("/notebooks")
+sys.path.remove("/notebooks")
 
-# sys.path.append("/notebooks/tracker/autotracker")
-# sys.path.append("/notebooks/tracker/autotracker/tracking/../../..")
+sys.path.append("/notebooks/tracker/autotracker")
+sys.path.append("/notebooks/tracker/autotracker/tracking/../../..")
 
 import tracker.autotracker as at
 
