@@ -1,0 +1,28 @@
+[
+    {
+      "movie_id": "Movies/308600",
+      "scene_element": 0,
+      "scene": 0,
+      "expert": "TrackerExpert",
+      "bbox": {
+      },
+      "label": "person0",
+      "meta_label": {
+        "class": "Object"
+      },
+      "re_id": 0
+    },
+    {
+        "movie_id": "Movies/308600",
+        "scene_element": 0,
+        "scene": 0,
+        "expert": "TrackerExpert",
+        "bbox": {
+        },
+        "label": "bird8",
+        "meta_label": {
+            "class": "Object"
+        },
+        "re_id": 0
+    }
+]

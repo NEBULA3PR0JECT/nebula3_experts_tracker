@@ -1,9 +1,11 @@
 version: "3.9"
 services:
   tracker:
-    image: aharonamir/nebula3_dev_tracker:a4f27b2
+    image: aharonamir/nebula3_expert_tracker:a4f27b2
     ports:
       - "48005:8000"
     environment:
       ARANGO_DB: "prodemo"
+      ARANGO_HOST: "172.83.9.249"
+
     runtime: nvidia
