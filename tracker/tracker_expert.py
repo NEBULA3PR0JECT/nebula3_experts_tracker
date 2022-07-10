@@ -19,7 +19,7 @@ from nebula3_experts.experts.common.defines import OutputStyle
 # sys.path.insert(1,"/notebooks/tracker")
 # sys.path.remove(".")
 # remove for microservice, enable for vscode container
-sys.path.remove("/notebooks")
+# sys.path.remove("/notebooks")
 
 sys.path.append("/notebooks/tracker/autotracker")
 sys.path.append("/notebooks/tracker/autotracker/tracking/../../..")
