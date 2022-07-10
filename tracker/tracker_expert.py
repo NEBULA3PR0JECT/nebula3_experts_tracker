@@ -168,7 +168,7 @@ class TrackerExpert(BaseExpert):
             self.logger.error(f'missing movie_id')
             return { 'error': f'movie frames not found: {params.movie_id}'}
         try:
-            self.tracker_dispatch_dict[params.movie_id] = {}
+            self.add_task(params.movie_id, params.__dict__)
             if not movie_fetched:
                 movie_fetched = self.download_video_file(params.movie_id)
             if movie_fetched:
@@ -183,7 +183,7 @@ class TrackerExpert(BaseExpert):
             error_msg = f'exception: {e} on movie: {params.movie_id}'
             self.logger.error(error_msg)
         finally:
-            self.tracker_dispatch_dict.pop(params.movie_id)
+            self.remove_task(params.movie_id)
         return result, error_msg
 
     def get_movie_and_frames(self, movie_id: str):
