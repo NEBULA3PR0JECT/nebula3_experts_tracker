@@ -3,6 +3,8 @@ import nebula3_experts.experts.common.constants as constants
 
 class StepParam(BaseModel):
     movie_id: str
+    scene_element: int = 0
+    mdf: int = 0
     action: str = 'track'
     detect_every: int = 10
     merge_iou_threshold: float = 0.95

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from fastapi import FastAPI
+from PIL import Image
 
 sys.path.append("/notebooks/nebula3_experts")
 sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline")
@@ -131,7 +132,9 @@ class TrackerExpert(BaseExpert):
         if (expert_params.extra_params is None):
             error = 'no extra_params id'
             return None, error
-        step_param = StepParam(movie_id=expert_params.movie_id, output=expert_params.output)
+        step_param = StepParam(movie_id=expert_params.movie_id,
+                               output=expert_params.output,
+                               scene_element=expert_params.scene_element)
         if expert_params.extra_params['action']:
             step_param.action = expert_params.extra_params['action']
         if expert_params.extra_params['detect_every']:
@@ -144,6 +147,8 @@ class TrackerExpert(BaseExpert):
             step_param.tracker_type = expert_params.extra_params['tracker_type']
         if 'batch_size' in expert_params.extra_params:
             step_param.batch_size = expert_params.extra_params['batch_size']
+        if 'mdf' in expert_params.extra_params:
+            step_param.mdf = expert_params.extra_params['mdf']
 
         return step_param, error
 
@@ -186,36 +191,28 @@ class TrackerExpert(BaseExpert):
             self.remove_task(params.movie_id)
         return result, error_msg
 
-    def get_movie_and_frames(self, movie_id: str):
-        """get movie from db and load movie frames from remote if not exists
-        Args:
-            movie_id (str): the movie id
-
-        Raises:
-            ValueError: _description_
-
-        Returns:
-            _type_: movie and number of frames
-        """
-        movie = self.movie_db.get_movie(movie_id)
-        self.tracker_dispatch_dict[movie_id] = {}
-        # loading the movie frames
-        num_frames = self.movie_s3.downloadDirectoryFroms3(movie_id)
-        return (movie, num_frames)
-
     def detect(self, detect_params: StepParam):
         """detector step
-
+        resolve the frame to detect and save it,
+        prepare the ds for the frame and predict it
         Args:
             detect_params (StepParam): _description_
 
         Returns:
             aggs: _description_
         """
-        return self.model.predict_video(DEFAULT_FILE_PATH, # detect_params.movie_id,
-                                 batch_size = detect_params.batch_size,
-                                 pred_every = detect_params.detect_every,
-                                 show_pbar = False)
+        scene_element = detect_params.scene_element if detect_params.scene_element else 0
+        movie = self.movie_db.get_movie(detect_params.movie_id)
+        if scene_element > len(movie['scene_elements']):
+            return None, f'scene_element: {scene_element} is bigger than movie scene elements'
+        frame_number = movie['mdfs'][scene_element][detect_params.mdf]
+        frames = self.divide_movie_into_frames([frame_number])
+        img = Image.open(frames[0])
+        return self.model.predict_single_frame(img)
+        # return self.model.predict_video(DEFAULT_FILE_PATH, # detect_params.movie_id,
+        #                          batch_size = detect_params.batch_size,
+        #                          pred_every = detect_params.detect_every,
+        #                          show_pbar = False)
 
     def transform_detection_result(self, detection_result, detect_params: StepParam):
         """transform detection result to the token db format
