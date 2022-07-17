@@ -37,11 +37,13 @@ POST http://localhost:8000/predict
 content-type: application/json
 
 {
-    "movie_id": "Movies/92363098",
+    "movie_id": "Movies/308719",
     "local": false,
+    "scene_element": 0,
     "extra_params": {
-        "action": "track",
-        "detect_every": 50
+        "action": "detect",
+        "detect_every": 50,
+        "mdf": 2
     }
 }
 

@@ -3,7 +3,7 @@ import sys
 import json
 from fastapi import FastAPI
 from PIL import Image
-
+import cv2
 sys.path.append("/notebooks/nebula3_experts")
 sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline")
 sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline/nebula3_database")
@@ -207,8 +207,10 @@ class TrackerExpert(BaseExpert):
             return None, f'scene_element: {scene_element} is bigger than movie scene elements'
         frame_number = movie['mdfs'][scene_element][detect_params.mdf]
         frames = self.divide_movie_into_frames([frame_number])
-        img = Image.open(frames[0])
-        return self.model.predict_single_frame(img)
+        # img = Image.open(frames[0])
+        img = cv2.imread(frames[0])
+        prediction = self.model.predict_single_frame(img)
+        return [prediction]
         # return self.model.predict_video(DEFAULT_FILE_PATH, # detect_params.movie_id,
         #                          batch_size = detect_params.batch_size,
         #                          pred_every = detect_params.detect_every,
