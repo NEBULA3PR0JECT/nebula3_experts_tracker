@@ -8,11 +8,11 @@ sys.path.append("/notebooks/nebula3_experts")
 sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline")
 sys.path.append("/notebooks/nebula3_experts/nebula3_pipeline/nebula3_database")
 
-from nebula3_experts.experts.common.constants import OUTPUT_DB
+from nebula3_experts.experts.common.constants import OUTPUT_DB, TYPE_IMAGE, TYPE_MOVIE
 from nebula3_experts.experts.service.base_expert import BaseExpert, DEFAULT_FILE_PATH
 from nebula3_experts.experts.app import ExpertApp
-from nebula3_experts.experts.common.models import ExpertParam, TokenRecord
-from tracker.common.models import StepParam
+from nebula3_experts.experts.common.models import ExpertParam, TokenRecord, ImageRecord
+from tracker.common.models import StepParam, ImageStepParam
 from tracker.common.config import TRACKER_CONF
 from nebula3_experts.experts.common.defines import OutputStyle
 
@@ -111,28 +111,78 @@ class TrackerExpert(BaseExpert):
         """ handle new movie """
         step_param, error = self.parse_tracker_params(expert_params)
         if error:
-            movie_id = expert_params.movie_id if  expert_params.movie_id else ''
+            movie_id = expert_params.id if  expert_params.id else ''
             return { 'error': f'error {error} for movie: {movie_id}'}
-        print(f'Predicting movie: {expert_params.movie_id} with action: {step_param.action}')
+        print(f'Predicting movie: {expert_params.id} with action: {step_param.action}')
         if step_param.action == ACTION_TRACK:
             result, error = self.handle_action_on_movie(step_param, False, self.track, self.transform_tracking_result)
         if step_param.action == ACTION_DETECT:
-            result, error = self.handle_action_on_movie(step_param, False, self.detect, self.transform_detection_result)
+            result, error = self.handle_action_on_movie(step_param, False, self.detect, self.transform_movie_frame_result)
         if step_param.action == ACTION_DEPTH:
             pass
         if not error and expert_params.output == OUTPUT_DB:
-            result, error = self.save_to_db(expert_params.movie_id, result)
+            result, error = self.save_to_db(expert_params.id, result)
         return { 'result': result, 'error': error }
+
+    def predict_image(self, expert_params: ExpertParam):
+        """ predicding a single image """
+        result = None
+        params, error = self.parse_image_detection_params(expert_params)
+        try:
+            self.add_task(params.image_id, params.__dict__)
+            # downloading the image
+            img_fetched = self.download_image_file(params.image_url)
+            if img_fetched:
+                # load image
+                img = cv2.imread(DEFAULT_FILE_PATH)
+                # running detection
+                prediction = self.model.predict_single_frame(img)
+                if prediction:
+                    result = self.transform_detection_result([prediction], TYPE_IMAGE, params.image_id)
+                else:
+                    error = f'failed to run detection on image id: {params.image_id}, url: {params.image_url}'
+                    self.logger.error(error)
+            else:
+                error = f'failed to download image id: {params.image_id}, url: {params.image_url}'
+                self.logger.error(error)
+        except Exception as e:
+            result = False
+            error = f'exception: {e} on image: {params.image_id}'
+            self.logger.error(error)
+        finally:
+            self.remove_task(params.image_id)
+         
+        return { 'result': result, 'error': error }
+
+    def parse_image_detection_params(self, expert_params: ExpertParam):
+        error = None
+        if (expert_params.id is None):
+            error = 'no image id'
+            return None, error
+        if (expert_params.img_url is None):
+            error = 'no image url'
+            return None, error
+        
+        img_step_param = ImageStepParam(image_id=expert_params.id,
+                                        image_url=expert_params.img_url,
+                                        output=expert_params.output)
+        if 'merge_iou_threshold' in expert_params.extra_params:
+            img_step_param.merge_iou_threshold = expert_params.extra_params['merge_iou_threshold']
+        if 'refresh_on_detect' in expert_params.extra_params:
+            img_step_param.refresh_on_detect = expert_params.extra_params['refresh_on_detect']
+        if 'tracker_type' in expert_params.extra_params:
+            img_step_param.tracker_type = expert_params.extra_params['tracker_type']
+        return img_step_param, error
 
     def parse_tracker_params(self, expert_params: ExpertParam):
         error = None
-        if (expert_params.movie_id is None):
+        if (expert_params.id is None):
             error = 'no movie id'
             return None, error
         if (expert_params.extra_params is None):
             error = 'no extra_params id'
             return None, error
-        step_param = StepParam(movie_id=expert_params.movie_id,
+        step_param = StepParam(movie_id=expert_params.id,
                                output=expert_params.output,
                                scene_element=expert_params.scene_element)
         if expert_params.extra_params['action']:
@@ -216,7 +266,10 @@ class TrackerExpert(BaseExpert):
         #                          pred_every = detect_params.detect_every,
         #                          show_pbar = False)
 
-    def transform_detection_result(self, detection_result, detect_params: StepParam):
+    def transform_movie_frame_result(self, detection_result, detect_params: StepParam):
+        return self.transform_detection_result(detection_result, TYPE_MOVIE, detect_params.movie_id)
+
+    def transform_detection_result(self, detection_result, detect_type, id):
         """transform detection result to the token db format
 
         Args:
@@ -239,11 +292,18 @@ class TrackerExpert(BaseExpert):
                     detections[cls].append(element)
                 else:
                     detections[cls] = [element]
-                tr = TokenRecord(detect_params.movie_id,
-                                0, 0, self.get_name(),
-                                detections[cls],
-                                cls,
-                                {'class': 'Object'})
+                if detect_type is TYPE_MOVIE:
+                    tr = TokenRecord(id,
+                                    0, 0, self.get_name(),
+                                    detections[cls],
+                                    cls,
+                                    {'class': 'Object'})
+                else: # type image
+                    tr = ImageRecord(id,
+                                    self.get_name(),
+                                    detections[cls],
+                                    cls,
+                                    {'class': 'Object'})
                 result.append(tr)
         return result
 

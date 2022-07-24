@@ -12,3 +12,11 @@ class StepParam(BaseModel):
     tracker_type: str =  'KCF'
     batch_size: int = 8
     output: str = constants.OUTPUT_JSON
+
+class ImageStepParam(BaseModel):
+    image_id: str
+    image_url: str
+    merge_iou_threshold: float = 0.95
+    refresh_on_detect: bool = True
+    tracker_type: str =  'KCF'
+    output: str = constants.OUTPUT_JSON

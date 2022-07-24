@@ -33,7 +33,7 @@ content-type: application/json
 }
 
 ### in docker
-POST http://localhost:8000/predict
+POST http://localhost:8010/predict
 content-type: application/json
 
 {
@@ -43,7 +43,7 @@ content-type: application/json
     "extra_params": {
         "action": "detect",
         "detect_every": 50,
-        "mdf": 2
+        "mdf": 0
     }
 }
 
@@ -57,5 +57,16 @@ content-type: application/json
     "extra_params": {
         "action": "track",
         "detect_every": 50
+    }
+}
+
+### PREDICT IMAGE
+POST http://localhost:8010/predict/image
+content-type: application/json
+
+{
+    "image_id": "2402585",
+    "url": "https://cs.stanford.edu/people/rak248/VG_100K/2367862.jpg",
+    "extra_params": {       
     }
 }
