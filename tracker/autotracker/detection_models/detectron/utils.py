@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-
 from ..detector import PretrainedVideoPredictor
 
 from detectron2 import model_zoo
