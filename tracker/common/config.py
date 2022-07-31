@@ -21,7 +21,7 @@ class TRACKER_CONF:
         self.CONFIDENCE_THRESHOLD = eval(getenv('CONFIDENCE_THRESHOLD','0.5'))
 
     def get_tracker_expert(self):
-        return (self.TRACKER_EXPERT_NAME)
+        return (self.TRACKER_EXPERT)
     def get_backend_tflow(self):
         return (self.BACKEND_TFLOW)
     def get_backend_detectron(self):
