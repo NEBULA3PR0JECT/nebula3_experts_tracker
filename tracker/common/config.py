@@ -13,12 +13,15 @@ class TRACKER_CONF:
 
         # self.BACKEND_TFLOW = getenv('TFLOW_BACKEND','CFG_OID_V4_DETECTION_FerRCNN_INCEPTION_V2')
         # self.BACKEND_DETECTRON = getenv('DETECTRON_BACKEND','CFG_COCO_DETECTION_FerRCNN_X101_32x8d_FPN_LR3x')
+        self.TRACKER_EXPERT = getenv('TRACKER_EXPERT', 'detectron')
         self.BACKEND_TFLOW = getenv('TFLOW_BACKEND','CFG_OID_V4_DETECTION_FerRCNN_INCEPTION_V2')
         self.BACKEND_DETECTRON = getenv('DETECTRON_BACKEND','CFG_COCO_DETECTION_FerRCNN_X101_32x8d_FPN_LR3x')
         self.BACKEND = getenv('BACKEND',None)
         self.BACKENDS = { 'tflow': self.BACKEND_TFLOW, 'detectron': self.BACKEND_DETECTRON }
         self.CONFIDENCE_THRESHOLD = eval(getenv('CONFIDENCE_THRESHOLD','0.5'))
 
+    def get_tracker_expert(self):
+        return (self.TRACKER_EXPERT_NAME)
     def get_backend_tflow(self):
         return (self.BACKEND_TFLOW)
     def get_backend_detectron(self):
