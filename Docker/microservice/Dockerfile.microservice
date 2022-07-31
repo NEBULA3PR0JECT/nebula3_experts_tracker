@@ -56,4 +56,6 @@ COPY . .
 RUN chmod a+x tracker/setup_docker_env.sh && cd tracker && /bin/bash ./setup_docker_env.sh
 # conda activate detectron
 RUN cd tracker/autotracker/detection_models/tflow && chmod +x setup.sh && /bin/bash ./setup.sh
+# remove tflow env
+RUN conda remove --name tflow --all
 CMD ["uvicorn", "tracker.tracker_expert:app", "--host", "0.0.0.0"]
