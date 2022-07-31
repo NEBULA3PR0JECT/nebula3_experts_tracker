@@ -151,7 +151,7 @@ class TrackerExpert(BaseExpert):
             self.logger.error(error)
         finally:
             self.remove_task(params.image_id)
-         
+
         return { 'result': result, 'error': error }
 
     def parse_image_detection_params(self, expert_params: ExpertParam):
@@ -162,16 +162,17 @@ class TrackerExpert(BaseExpert):
         if (expert_params.img_url is None):
             error = 'no image url'
             return None, error
-        
+
         img_step_param = ImageStepParam(image_id=expert_params.id,
                                         image_url=expert_params.img_url,
                                         output=expert_params.output)
-        if 'merge_iou_threshold' in expert_params.extra_params:
-            img_step_param.merge_iou_threshold = expert_params.extra_params['merge_iou_threshold']
-        if 'refresh_on_detect' in expert_params.extra_params:
-            img_step_param.refresh_on_detect = expert_params.extra_params['refresh_on_detect']
-        if 'tracker_type' in expert_params.extra_params:
-            img_step_param.tracker_type = expert_params.extra_params['tracker_type']
+        if expert_params.extra_params:
+            if 'merge_iou_threshold' in expert_params.extra_params:
+                img_step_param.merge_iou_threshold = expert_params.extra_params['merge_iou_threshold']
+            if 'refresh_on_detect' in expert_params.extra_params:
+                img_step_param.refresh_on_detect = expert_params.extra_params['refresh_on_detect']
+            if 'tracker_type' in expert_params.extra_params:
+                img_step_param.tracker_type = expert_params.extra_params['tracker_type']
         return img_step_param, error
 
     def parse_tracker_params(self, expert_params: ExpertParam):
